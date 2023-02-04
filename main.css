@@ -1,0 +1,46 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+#container{
+    width: 100%;
+    height: 100%;
+    background-color: gray;
+    float: left;
+    position: absolute;
+    left: 0;
+    right: 0;
+
+}
+#container .gossipFrame{
+    width: 400px;
+    height: 600px;
+    background-color: white;
+    margin: 50px auto;
+    position: relative;
+}
+#container .gossipFrame .title{
+    width: 100%;
+    height: 7%;
+    background-color: #bfa;
+    text-align: center;
+    line-height: 40px;
+}
+#container .gossipFrame .outFrame{
+    width: 100%;
+    height: 8%;
+    background-color: rgb(230, 201, 201);
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+}
+#container .gossipFrame .Frame{
+    width: 100%;
+    height: 85%;
+    overflow: auto;
+}
+#container .gossipFrame .outFrame .out-input{
+    height: 60%;
+    width: 80%;
+    margin-top: 8px;
+}

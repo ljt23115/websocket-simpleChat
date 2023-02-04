@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <!-- <button id="btn">发送请求</button>
+    <button id="btn01">关闭请求</button> -->
+    <div id="container">
+        <div class="gossipFrame">
+            <div class="title">
+                <span class="title-span">聊天室</span>
+            </div>
+            <div class="Frame"></div>
+            <div class="outFrame">
+                <input type="text" class="out-input" placeholder="输入你要发送的内容">
+                <button class="send">发送</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // let btn = document.querySelector('#btn')
+        // let btn01 = document.querySelector('#btn01')
+
+        let send = document.getElementsByClassName('send')[0]
+        let out_input = document.getElementsByClassName('out-input')[0]
+
+        let Frame = document.getElementsByClassName('Frame')[0]
+
+        let sender = 'B'
+        //收集要发送的内容
+        let sendobj = {
+            data:'',
+            direction:'',
+            sender:'B',
+            ChatLibNum: 0,
+            sender01: '',
+            Tosender: ''
+        }
+        //为发送按钮绑定事件
+        send.addEventListener('click', function(){
+            let data = out_input.value
+            let direction = 'right'
+            this.data = data
+            this.direction = direction
+            createTalk(this.data, this.direction, this.sender)
+        }.bind(sendobj))
+
+        //创建对话的函数
+        function createTalk(data, direction, sender){
+            if(data == '')return
+            let p = document.createElement('p')
+            let border = document.createElement('div')
+            p.style = `height: 4%;padding: 5px;float: ${direction};`
+            border.style = `border-bottom: 1px dashed black;height: 0;width: 100%;clear: both;`
+            if(direction == 'left') p.innerText = `${sender}说:${data}`
+            else p.innerText = `${data}:${sender}说`
+            
+            Frame.appendChild(p)
+            Frame.appendChild(border)
+            Frame.scrollTop = Frame.scrollHeight
+
+            sendobj.ChatLibNum ++
+        }
+
+        //绑定enter发送的事件
+        document.onkeyup = function(ev){
+            if(out_input !== document.activeElement) return
+            if(ev.keyCode == 13){
+                    send.click()
+                }
+        }
+
+
+
+
+        //发送数据的ws接口
+        const wsOn = function(url){
+            
+            let ws = new WebSocket(url)
+            //连接完成后的回调
+            ws.onopen = (evt)=>{
+                console.log('Connecting open...')
+
+                this.direction = 'left'
+
+                console.log('opening')
+
+                ws.send(JSON.stringify(this))
+
+                this.chance = 0
+
+                send.addEventListener('click', ()=>{
+                    if(this.data == '')return
+                    ws.send(JSON.stringify(this))
+                    out_input.value = ''
+                    this.data = ''
+                    // ws.send(this)
+                })
+                // btn.onclick = ()=>{
+                //     ws.send(sendobj.name)
+                // }
+            }
+            //接收信息的回调
+            ws.onmessage = (data)=>{
+
+                var data = JSON.parse(data.data)
+                if(data.Tosender == 'A') return
+                if(data.Tosender == data.sender){
+                    data.direction = 'right'
+                }else{
+                    data.direction = 'left'
+                }
+                if(data.sender !== 'B' || data.sender01 == 'lib'){
+                    createTalk(data.data, data.direction, data.sender)
+                }
+            }
+
+            ws.onclose = (evt)=>{
+                // btn.onclick = ()=>{}
+                console.log('Connection closed')
+            }
+
+            ws.onerror = (err)=>{
+                console.log(err)
+            }
+
+        }.bind(sendobj)
+        wsOn('ws://localhost:8080')
+
+
+    </script>
+</body>
+</html>
